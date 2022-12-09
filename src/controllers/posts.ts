@@ -22,7 +22,6 @@ import {
 } from 'snarkyjs';
 
 const crypto = require('crypto');
-const SALT = '$ome$altUsedToHmacThingsUp';
 
 interface Crypto
 {
@@ -36,7 +35,8 @@ interface Crypto
 const env = load({
     ENDPOINT: String,
     PUBLICKEY: String,
-    PRIVKEY: String
+    PRIVKEY: String,
+    SALT: String
 });
 
 // getting prices
@@ -49,7 +49,7 @@ const getPrices = async (req: Request, res: Response, next: NextFunction) =>
     let zkAppPrivateKey = PrivateKey.fromBase58(env.PRIVKEY);
     let zkAppAddress = zkAppPrivateKey.toPublicKey();
 
-    let ress = crypto.createHmac('sha256', SALT) 
+    let ress = crypto.createHmac('sha256', env.SALT) 
                      .update(posts.toString())
                      .digest('hex');
 
