@@ -19,9 +19,8 @@ import {
     CircuitString,
     PrivateKey,
     Struct,
+    Encoding
 } from 'snarkyjs';
-
-const crypto = require('crypto');
 
 interface Crypto
 {
@@ -48,14 +47,8 @@ const getPrices = async (req: Request, res: Response, next: NextFunction) =>
     // let zkAppPrivateKey = PrivateKey.random();
     let zkAppPrivateKey = PrivateKey.fromBase58(env.PRIVKEY);
     let zkAppAddress = zkAppPrivateKey.toPublicKey();
-
-    let ress = crypto.createHmac('sha256', env.SALT) 
-                     .update(posts.toString())
-                     .digest('hex');
-
-    let cST = CircuitString.fromString(ress);
-
-    let rSign = Signature.create(zkAppPrivateKey, cST.toFields());
+    let cST = Encoding.stringToFields(posts.toString());
+    let rSign = Signature.create(zkAppPrivateKey, cST);
     // console.log("signature: ", rSign.toJSON());
 
     let signedPayload = {
