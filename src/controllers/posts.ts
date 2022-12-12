@@ -13,13 +13,10 @@ import axios, { AxiosResponse } from 'axios';
 import { load } from 'ts-dotenv';
 
 import {
-    SmartContract,
-    PublicKey,
     Signature,
-    CircuitString,
     PrivateKey,
-    Struct,
-    Encoding
+    Encoding,
+    Poseidon
 } from 'snarkyjs';
 
 interface Crypto
@@ -47,8 +44,8 @@ const getPrices = async (req: Request, res: Response, next: NextFunction) =>
     // let zkAppPrivateKey = PrivateKey.random();
     let zkAppPrivateKey = PrivateKey.fromBase58(env.PRIVKEY);
     let zkAppAddress = zkAppPrivateKey.toPublicKey();
-    let cST = Encoding.stringToFields(posts.toString());
-    let rSign = Signature.create(zkAppPrivateKey, cST);
+    let cST = Poseidon.hash(Encoding.stringToFields(posts.toString()));
+    let rSign = Signature.create(zkAppPrivateKey, cST.toFields());
     // console.log("signature: ", rSign.toJSON());
 
     let signedPayload = {
